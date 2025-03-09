@@ -1,0 +1,84 @@
+package menu;
+
+import java.util.Scanner;
+
+public class GraphMenu {
+    private boolean running = true;
+    private Scanner scanner;
+
+    public GraphMenu() {
+        scanner = new Scanner(System.in);
+    }
+
+    public void showMainMenu() {
+        while (running) {
+            printMenu();
+            System.out.print("Enter your choice: ");
+            String choice = scanner.nextLine().toUpperCase();
+            
+            switch (choice) {
+                case "Z":
+                    showGraphGenerationMenu();
+                    break;
+                case "X":
+                    showGraphTestMenu();
+                    break;
+                case "C":
+                    showGraphTransferMenu();
+                    break;
+                case "Q":
+                    running = false;
+                    System.out.println("Exiting the program...");
+                    break;
+                default:
+                    System.out.println("Invalid input! Please try again.");
+            }
+        }
+    }
+
+    private void printMenu() {
+        System.out.println("\nGraph Generator - Main Menu");
+        System.out.println("Z - Graph Generation Menu");
+        System.out.println("X - Graph Test Menu");
+        System.out.println("C - Graph Transfer Menu");
+        System.out.println("Q - Exit");
+    }
+
+    private void showGraphGenerationMenu() {
+        System.out.println("\nGraph Generation Menu:");
+        System.out.println("1. Generate graph");
+        System.out.println("2. Set degrees with Degree Sequence");
+        System.out.println("3. Set degrees with min/max degree");
+        System.out.println("4. Calculate R matrices");
+        waitForUser();
+    }
+
+    private void showGraphTestMenu() {
+        System.out.println("\nGraph Test Menu:");
+        System.out.println("1. Check if connected");
+        System.out.println("2. Check if contains C3");
+        System.out.println("3. Find isolated vertices");
+        System.out.println("4. Check if complete graph (Kn)");
+        System.out.println("5. Check if bipartite");
+        waitForUser();
+    }
+
+    private void showGraphTransferMenu() {
+        System.out.println("\nGraph Transfer Menu:");
+        System.out.println("1. Copy main graph to secondary graph (G)");
+        System.out.println("2. Copy secondary graph to main graph (H)");
+        System.out.println("3. Load a graph file (L)");
+        System.out.println("4. Save main graph to a file (S)");
+        waitForUser();
+    }
+
+    private void waitForUser() {
+        System.out.println("\nPress Enter to return to the main menu...");
+        scanner.nextLine();
+    }
+
+    public static void main(String[] args) {
+        GraphMenu menu = new GraphMenu();
+        menu.showMainMenu();
+    }
+}
