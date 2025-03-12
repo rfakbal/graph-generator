@@ -19,6 +19,16 @@ public class Graph {
         }
     }
 
+    private static void shuffleArray(int[] array, int size) {
+        Random rand = new Random();
+        for (int i = size - 1; i > 0; i--) {
+            int j = rand.nextInt(i + 1);
+            int temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+    
     private static void bubbleSort(int arr[], int n){
         int i, j, temp;
         boolean swapped;
@@ -85,18 +95,21 @@ public class Graph {
             return false;
         }
         
-        List<Integer> nodeList = new ArrayList<>();
+        int totalEdges = Arrays.stream(degrees).sum();
+        int[] nodeList = new int[totalEdges];
+        int index = 0;
         for (int i = 0; i < nodeCount; i++) {
             for (int j = 0; j < degrees[i]; j++) {
-                nodeList.add(i);
+                nodeList[index++] = i;
             }
         }
         
-        Collections.shuffle(nodeList);
+        shuffleArray(nodeList, totalEdges);
         
-        while (!nodeList.isEmpty()) {
-            int a = nodeList.remove(0);
-            int b = nodeList.remove(0);
+        index = 0;
+        while (index < totalEdges) {
+            int a = nodeList[index++];
+            int b = nodeList[index++];
             
             if (a != b && relationMatrix[a][b] == 0) {
                 relationMatrix[a][b] = 1;
@@ -104,13 +117,11 @@ public class Graph {
                 degrees[a]--;
                 degrees[b]--;
             } else {
-                nodeList.add(a);
-                nodeList.add(b);
-                Collections.shuffle(nodeList);
+                index -= 2;
+                shuffleArray(nodeList, totalEdges);
             }
         }
         
-        // Kontrol: Graf tamamen oluşturuldu mu?
         for (int degree : degrees) {
             if (degree != 0) {
                 System.out.println("Graph creation failed: Some degrees remain unmatched.");
