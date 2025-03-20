@@ -19,6 +19,10 @@ public class Graph {
         }
     }
 
+    public int[][] getRelationMatrix(){
+        return this.relationMatrix;
+    }
+
     // if sum of the degrees is odd then it is impossible to generate a graph
     private boolean isValidDegreeSequence() {
         int sum = sumArray(degrees);
