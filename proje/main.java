@@ -1,7 +1,8 @@
 public class main{
     public static void main(String[] args) {
-        board t = new board();
-        t.tabloyuYazdir();
+        //board t = new board();
+        //t.tabloyuYazdir();
+        drawing_graph.main(args);
         
     }
     

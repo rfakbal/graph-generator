@@ -1,5 +1,6 @@
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class drawing_graph {
 
@@ -242,8 +243,20 @@ public class drawing_graph {
     
 
     public static void main(String[] args) {
-        int size = node_calculator();
-        int[][] relation_matrix = array_creater(size);
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter the number of nodes: ");
+        int nodeCount = sc.nextInt();
+        int[] degrees = new int[nodeCount];
+
+        System.out.println("Enter the degree for each node:");
+        for (int i = 0; i < nodeCount; i++) {
+            degrees[i] = sc.nextInt();
+        }
+
+        Graph graph = new Graph(nodeCount, degrees);
+        graph.generateGraph();
+        int size = nodeCount;
+        int[][] relation_matrix = graph.getRelationMatrix();
         int[] reduced_relation;
         reduced_relation=relatecheck(size,relation_matrix);
         board t = new board();
@@ -252,5 +265,6 @@ public class drawing_graph {
         locations=location_finder(size, t.getTablo());
         shortest_way_finder(t.getTablo(),reduced_relation,locations);
         t.tabloyuYazdir();
+        graph.printRelationMatrix();
     }
 }
