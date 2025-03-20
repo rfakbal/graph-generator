@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class Graph {
@@ -147,7 +149,11 @@ public class Graph {
             System.out.println();
         }
     }
-    
+
+    public int[][] getRelationMatrix() {
+        return relationMatrix;
+    }
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter the number of nodes: ");
@@ -162,6 +168,18 @@ public class Graph {
         if (graph.generateGraph()) {
             System.out.println("Graph successfully generated.");
             graph.printRelationMatrix();
+            
+            try (FileWriter writer = new FileWriter("graph_matrix.txt")) {
+                for (int i = 0; i < graph.nodeCount; i++) {
+                    for (int j = 0; j < graph.nodeCount; j++) {
+                        writer.write(graph.relationMatrix[i][j] + " ");
+                    }
+                    writer.write("\n");
+                }
+                System.out.println("Matrix has been saved to graph_matrix.txt");
+            } catch (IOException e) {
+                System.out.println("Error writing to file: " + e.getMessage());
+            }
         } else {
             System.out.println("Failed to generate graph.");
         }
