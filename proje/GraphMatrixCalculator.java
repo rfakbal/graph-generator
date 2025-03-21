@@ -1,120 +1,137 @@
-import java.util.*;
-public class GraphMatrixCalculator{
-	
-	
-	private int [][]  relationMatrix;
-	private int [][]  Rstar;
-	private int [][]  Rmin;
-	private int n ; // Number of vertices;
-	
-	
-	public GraphMatrixCalculator(int[][]relationMatrix) {
+import java.util.Arrays;
+
+class GraphMatrixCalculator {
+
+	private int[][] relationMatrix; // Grafın komşuluk matrisi
+	private int n; // Grafın düğüm (vertex) sayısı
+
+	public GraphMatrixCalculator(int[][] relationMatrix) {
 		this.relationMatrix = relationMatrix;
-		this.n  = relationMatrix.length;
-		this.Rstar = new int[n][n];
-		this.Rmin = new int [n][n];
+		this.n = relationMatrix.length;
 	}
-	  // Calculate R^2, R^3, R^4, ...., R^n
-	public void calculatePowerMatrices () {
-		int [][] currentMatrix = relationMatrix ;
-		
-		for (int power = 2 ; power < n ; power++ ) {
-			int [][]nextMatrix = new int [n][n];
-			
-			for (int i = 0 ; i < n ; i++) {
-				for (int j = 0 ; j < n ; j++) {
-					for (int k = 0 ; k < n ; k++) {
-						nextMatrix [i][j] += currentMatrix[i][k]*relationMatrix[j][k];
-					}
-				}
-			}
-			printMatrix(nextMatrix, "R^" +power );
-			currentMatrix = nextMatrix;
+
+	// R^k matrisini hesaplama (k uzunluğundaki yolları gösteren matris)
+	public int[][] calculateRk(int k) {
+		int[][] result = relationMatrix; // Orijinal matrisle başla
+
+		for (int power = 2; power <= k; power++) {
+			result = multiplyMatrices(result, relationMatrix);
 		}
+
+		return result;
 	}
-	// Calculate R*
-	public void calculateRstar() {
-		for (int i = 0 ; i < n ; i++) {
-			for (int j = 0 ; j < n ; j++) {
-				Rstar[i][j] = relationMatrix[i][j];			
+
+	//R* matrisini hesaplama
+	public int[][] calculateRstar() {
+		int[][] Rstar = new int[n][n];
+
+		// Orijinal matrisi kopyala
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				Rstar[i][j] = relationMatrix[i][j];
 			}
 		}
-		int[][] currentMatrix = relationMatrix;
-		
-		for(int power = 2 ; power <= n ; power++) {
-			int[][] nextMatrix = new int [n][n];
-			for (int i = 0 ; i < n ; i++) {
-				for (int j = 0 ; j < n ; j++) {
-					for(int k = 0 ; k < n ; k++) {
-						nextMatrix[i][j] +=  currentMatrix[i][k] * relationMatrix[k][j];
-					}
-				}
-			}
-			for (int i = 0 ; i < n ; i++) {
-				for (int j = 0 ; j < n ; j++) {
-					Rstar[i][j]  |= nextMatrix[i][j];
-				}
-			}
-			currentMatrix = nextMatrix;
-		}
-		printMatrix(Rstar, "R*");
-	}
-	
-	// Calculate Rmin
-	public void calculateRmin () {
-		for (int i = 0 ; i < n ; i++) {
-			for (int j = 0 ; j < n ; j++) {
-				Rmin[i][j] = Integer.MAX_VALUE;
-			}
-		}
-		for (int i = 0 ; i < n ; i++) {
-			Rmin[i][i] = 0 ;
-		}
-		int[][] currentMatrix = relationMatrix;
-		for (int power = 1 ; power <= n ; power++) {
-			int[][] nextMatrix = new int[n][n];
-			for (int i = 0 ; i < n ; i++) {
-				for (int j = 0 ; j < n ; j++) {
-					for (int k = 0 ; k < n ; k++) {
-						nextMatrix[i][j] += currentMatrix[i][k] * relationMatrix[k][j];	 
-					}
-				}
-			}
-			currentMatrix = nextMatrix;
-			for (int i = 0 ; i < n ; i++) {
-				for (int j = 0 ; j < n ; j++) {
-					if (currentMatrix[i][j] > 0 && Rmin[i][j] == Integer.MAX_VALUE) {
-						Rmin[i][j] = power;
+
+		// R* = R + R^2 + R^3 + ... + R^n hesapla
+		for (int power = 2; power <= n; power++) {
+			int[][] Rk = calculateRk(power);
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					if (Rk[i][j] > 0) {
+						Rstar[i][j] = 1;
 					}
 				}
 			}
 		}
-		printMatrix(Rmin, "Rmin");
+
+		return Rstar;
 	}
-	
-	// Method to print Matrix
-	private void printMatrix(int[][] matrix, String matrixName) {
-		System.out.println(matrixName + ":");
-		for (int []row : matrix) {
+
+	// Rmin matrisini hesaplama (minimum mesafeler matrisi)
+	public int[][] calculateRmin() {
+		int[][] Rmin = new int[n][n];
+
+		// Rmin matrisini başlatilmasi
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				if (i == j) {
+					Rmin[i][j] = 0; // Bir düğümün kendine olan mesafesi 0
+				} else if (relationMatrix[i][j] == 1) {
+					Rmin[i][j] = 1; // Doğrudan kenar varsa mesafe 1
+				} else {
+					Rmin[i][j] = Integer.MAX_VALUE / 2; // Aksi takdirde mesafe "sonsuz"
+				}
+			}
+		}
+
+		//minimum mesafeleri buluyoruz
+		for (int k = 0; k < n; k++) {
+			for (int i = 0; i < n; i++) {
+				for (int j = 0; j < n; j++) {
+					if (Rmin[i][k] + Rmin[k][j] < Rmin[i][j]) {
+						Rmin[i][j] = Rmin[i][k] + Rmin[k][j];
+					}
+				}
+			}
+		}
+
+		return Rmin;
+	}
+
+	// İki matrisi çarpma
+	private int[][] multiplyMatrices(int[][] a, int[][] b) {
+		int[][] result = new int[n][n];
+
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < n; j++) {
+				result[i][j] = 0;
+				for (int k = 0; k < n; k++) {
+					result[i][j] += a[i][k] * b[k][j];
+				}
+				// Sonucu binary matrise dönüştür
+				if (result[i][j] > 0) {
+					result[i][j] = 1;
+				} else {
+					result[i][j] = 0;
+				}
+			}
+		}
+
+		return result;
+	}
+	// Matrisi ekrana yazdırma
+	public void printMatrix(int[][] matrix, String name) {
+		System.out.println(name + ":");
+		for (int[] row : matrix) {
 			for (int value : row) {
 				System.out.print(value + " ");
 			}
-			System.out.println();	 
+			System.out.println();
 		}
 		System.out.println();
 	}
-	
-	public static void main (String[] args) {
-		// Example of relation matrix
-		int [][] relationMatrix = {
-			{0 , 1 , 0 , 0 },
-			{1 , 0 , 1 , 0 },
-			{0 , 1 , 0 , 1 },
-			{0 , 1 , 0 , 0 }
+	public static void main(String[] args) {
+		// Örnek matris
+		int[][] relationMatrix = {
+				{0, 1, 0, 0},
+				{1, 0, 1, 0},
+				{0, 1, 0, 1},
+				{0, 0, 1, 0}
 		};
+
+		// GraphMatrixCalculator nesnesi oluştur
 		GraphMatrixCalculator calculator = new GraphMatrixCalculator(relationMatrix);
-		calculator.calculatePowerMatrices();
-		calculator.calculateRstar();
-		calculator.calculateRmin();
+
+		int[][] R2 = calculator.calculateRk(2);
+		calculator.printMatrix(R2, "R^2");
+
+		int[][] R3 = calculator.calculateRk(3);
+		calculator.printMatrix(R3, "R^3");
+
+		int[][] Rstar = calculator.calculateRstar();
+		calculator.printMatrix(Rstar, "R*");
+
+		int[][] Rmin = calculator.calculateRmin();
+		calculator.printMatrix(Rmin, "Rmin");
 	}
 }
