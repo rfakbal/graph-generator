@@ -132,44 +132,78 @@ public class Graph {
             System.out.println("Invalid degree sequence (sum is odd).");
             return;
         }
-
-        int[] degreesCopy = copyArray(degrees);
-        if (!isGraphPossible(degreesCopy)) {
-            System.out.println("A valid graph cannot be formed with this degree sequence.");
-            return;
-        }
-
-        int[][] nodes = new int[nodeCount][2];
-        for (int i = 0; i < nodeCount; i++) {
-            nodes[i][0] = i;
-            nodes[i][1] = degrees[i];
-        }
-
-        while (nodes.length > 0) {
-            sortDescending(nodes);
-
-            int nodeIndex = nodes[0][0];
-            int degree = nodes[0][1];
-
-            if (degree > nodes.length - 1) {
-                System.out.println("A valid graph could not be generated.");
+    
+        for (int attempt = 0; attempt < 100; attempt++) {
+            int[][] tempMatrix = new int[nodeCount][nodeCount];
+            int[][] nodes = new int[nodeCount][2];
+    
+            for (int i = 0; i < nodeCount; i++) {
+                nodes[i][0] = i;
+                nodes[i][1] = degrees[i];
+            }
+    
+            boolean success = true;
+    
+            while (true) {
+                sortDescending(nodes);
+    
+                if (nodes.length == 0 || nodes[0][1] == 0) break;
+    
+                int currentNode = nodes[0][0];
+                int degree = nodes[0][1];
+    
+                if (degree > nodes.length - 1) {
+                    success = false;
+                    break;
+                }
+    
+                int[] targetIndices = new int[nodes.length - 1];
+                for (int i = 0; i < nodes.length - 1; i++) {
+                    targetIndices[i] = i + 1;
+                }
+    
+                // shuffles array randomly
+                for (int i = targetIndices.length - 1; i > 0; i--) {
+                    int j = (int)(Math.random() * (i + 1));
+                    int temp = targetIndices[i];
+                    targetIndices[i] = targetIndices[j];
+                    targetIndices[j] = temp;
+                }
+    
+                boolean failed = false;
+                for (int k = 0; k < degree; k++) {
+                    int targetIndex = targetIndices[k];
+                    int targetNode = nodes[targetIndex][0];
+    
+                    if (nodes[targetIndex][1] == 0) {
+                        failed = true;
+                        break;
+                    }
+    
+                    tempMatrix[currentNode][targetNode] = 1;
+                    tempMatrix[targetNode][currentNode] = 1;
+                    nodes[targetIndex][1]--;
+                }
+    
+                if (failed) {
+                    success = false;
+                    break;
+                }
+    
+                nodes[0][1] = 0;
+                nodes = removeZeroDegreeNodes(nodes);
+            }
+    
+            if (success) {
+                this.relationMatrix = tempMatrix;
+                this.valid = true;
                 return;
             }
-
-            for (int i = 1; i <= degree; i++) {
-                int targetIndex = nodes[i][0];
-
-                relationMatrix[nodeIndex][targetIndex] = 1;
-                relationMatrix[targetIndex][nodeIndex] = 1;
-                nodes[i][1]--;
-            }
-
-            nodes[0][1] = 0; // set the degree of the node that processed to 0
-            nodes = removeZeroDegreeNodes(nodes); // remove nodes with 0 degree
         }
-
-        this.valid = true;
+    
+        System.out.println("A valid graph could not be generated");
     }
+    
 
     // printing relation matrix
     public void printRelationMatrix() {
