@@ -19,11 +19,15 @@ public class Graph {
         }
     }
 
-    public int[][] getRelationMatrix(){
+    public int[][] getRelationMatrix() {
         return this.relationMatrix;
     }
 
-    public boolean isValid(){
+    public void setRelationMatrix(int[][] relationMatrix) {
+        this.relationMatrix = relationMatrix;
+    }
+
+    public boolean isValid() {
         return this.valid;
     }
 
@@ -39,15 +43,19 @@ public class Graph {
         int n = degrees.length;
 
         for (int i = n - 1; i >= 0; i--) {
-            if (degrees[i] < 0) return false;
+            if (degrees[i] < 0)
+                return false;
             int first = degrees[i];
-            if (first == 0) continue;
+            if (first == 0)
+                continue;
 
-            if (first > i) return false;
+            if (first > i)
+                return false;
 
             for (int j = i - 1; j >= i - first; j--) {
                 degrees[j]--;
-                if (degrees[j] < 0) return false;
+                if (degrees[j] < 0)
+                    return false;
             }
 
             degrees[i] = 0;
@@ -132,78 +140,78 @@ public class Graph {
             System.out.println("Invalid degree sequence (sum is odd).");
             return;
         }
-    
+
         for (int attempt = 0; attempt < 100; attempt++) {
             int[][] tempMatrix = new int[nodeCount][nodeCount];
             int[][] nodes = new int[nodeCount][2];
-    
+
             for (int i = 0; i < nodeCount; i++) {
                 nodes[i][0] = i;
                 nodes[i][1] = degrees[i];
             }
-    
+
             boolean success = true;
-    
+
             while (true) {
                 sortDescending(nodes);
-    
-                if (nodes.length == 0 || nodes[0][1] == 0) break;
-    
+
+                if (nodes.length == 0 || nodes[0][1] == 0)
+                    break;
+
                 int currentNode = nodes[0][0];
                 int degree = nodes[0][1];
-    
+
                 if (degree > nodes.length - 1) {
                     success = false;
                     break;
                 }
-    
+
                 int[] targetIndices = new int[nodes.length - 1];
                 for (int i = 0; i < nodes.length - 1; i++) {
                     targetIndices[i] = i + 1;
                 }
-    
+
                 // shuffles array randomly
                 for (int i = targetIndices.length - 1; i > 0; i--) {
-                    int j = (int)(Math.random() * (i + 1));
+                    int j = (int) (Math.random() * (i + 1));
                     int temp = targetIndices[i];
                     targetIndices[i] = targetIndices[j];
                     targetIndices[j] = temp;
                 }
-    
+
                 boolean failed = false;
                 for (int k = 0; k < degree; k++) {
                     int targetIndex = targetIndices[k];
                     int targetNode = nodes[targetIndex][0];
-    
+
                     if (nodes[targetIndex][1] == 0) {
                         failed = true;
                         break;
                     }
-    
+
                     tempMatrix[currentNode][targetNode] = 1;
                     tempMatrix[targetNode][currentNode] = 1;
                     nodes[targetIndex][1]--;
                 }
-    
+
                 if (failed) {
                     success = false;
                     break;
                 }
-    
+
                 nodes[0][1] = 0;
                 nodes = removeZeroDegreeNodes(nodes);
             }
-    
+
             if (success) {
                 this.relationMatrix = tempMatrix;
                 this.valid = true;
                 return;
             }
         }
-    
+
         System.out.println("A valid graph could not be generated");
     }
-    
 
     // printing relation matrix
     public void printRelationMatrix() {
@@ -226,6 +234,89 @@ public class Graph {
         }
     }
 
+    // method to check if two graphs are isomorphic
+    public boolean isIsomorphicWith(Graph other) {
+        if (this.nodeCount != other.nodeCount){
+            return false;
+        }
+            
+        int[][] otherMatrix = other.getRelationMatrix();
+        int[] perm = new int[nodeCount];
+        for (int i = 0; i < nodeCount; i++){
+            perm[i] = i;
+        }
+            
+        int totalPermutations = factorialCalculate(nodeCount);
+
+        for (int count = 0; count < totalPermutations; count++) {
+            int[] currentPerm = generateNthPermutation(count, nodeCount);
+            /*System.out.print(count + ". permutation: [");
+            for (int i = 0; i < currentPerm.length; i++) {
+                System.out.print(currentPerm[i]);
+                if (i < currentPerm.length - 1)
+                    System.out.print(", ");
+            }
+            System.out.println("]");
+            */
+            if (areMatricesEqualWithPermutation(this.relationMatrix, otherMatrix, currentPerm)) {
+                System.out.println("Isomorphic at permutation index: " + count);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // check if two matrices are equal after applying a permutation to one
+    private boolean areMatricesEqualWithPermutation(int[][] m1, int[][] m2, int[] perm) {
+        for (int i = 0; i < nodeCount; i++) {
+            for (int j = 0; j < nodeCount; j++) {
+                if (m1[i][j] != m2[perm[i]][perm[j]])
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    // generate nth permutation of a given size
+    private static int[] generateNthPermutation(int n, int size) {
+        int[] result = new int[size];
+        boolean[] used = new boolean[size];
+        int[] factorials = new int[size];
+        factorials[0] = 1;
+        for (int i = 1; i < size; i++) {
+            factorials[i] = factorials[i - 1] * i;
+        }
+
+        for (int i = 0; i < size; i++) {
+            int fact = factorials[size - 1 - i];
+            int index = n / fact;
+            n = n % fact;
+
+            int count = -1;
+            for (int j = 0; j < size; j++) {
+                if (!used[j]) {
+                    count++;
+                    if (count == index) {
+                        result[i] = j;
+                        used[j] = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    // factorial calculator
+    private int factorialCalculate(int n) {
+        int result = 1;
+        for (int i = 2; i <= n; i++)
+            result *= i;
+        return result;
+    }
+
     // main function to test the methods etc.
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -242,5 +333,52 @@ public class Graph {
         graph.generateGraph();
         System.out.println("\nGenerated Adjacency Matrix:");
         graph.printRelationMatrix();
+        for (int i = 0; i < 10; i++) {
+            System.out.println();
+        }
+        int[] testDegrees = { 4, 3, 3, 3, 3, 2, 2, 2, 2 };
+        Graph graph1 = new Graph(9, testDegrees);
+        graph1.generateGraph();
+        Graph graph2 = new Graph(9, testDegrees);
+        graph2.generateGraph();
+        int[][] m1 = {
+                { 0, 1, 1, 0, 1, 1, 0, 0, 0 },
+                { 1, 0, 0, 1, 0, 0, 0, 0, 1 },
+                { 1, 0, 0, 1, 1, 0, 0, 0, 0 },
+                { 0, 1, 1, 0, 0, 0, 0, 0, 1 },
+                { 1, 0, 1, 0, 0, 0, 0, 1, 0 },
+                { 1, 0, 0, 0, 0, 0, 1, 0, 0 },
+                { 0, 0, 0, 0, 0, 1, 0, 1, 0 },
+                { 0, 0, 0, 0, 1, 0, 1, 0, 0 },
+                { 0, 1, 0, 1, 0, 0, 0, 0, 0 }
+        };
+        int[][] m2 = {
+                { 0, 0, 1, 1, 1, 0, 1, 0, 0 },
+                { 0, 0, 1, 1, 0, 1, 0, 0, 0 },
+                { 1, 1, 0, 0, 1, 0, 0, 0, 0 },
+                { 1, 1, 0, 0, 0, 1, 0, 0, 0 },
+                { 1, 0, 1, 0, 0, 0, 0, 1, 0 },
+                { 0, 1, 0, 1, 0, 0, 0, 0, 0 },
+                { 1, 0, 0, 0, 0, 0, 0, 0, 1 },
+                { 0, 0, 0, 0, 1, 0, 0, 0, 1 },
+                { 0, 0, 0, 0, 0, 0, 1, 1, 0 }
+        };
+
+        graph1.setRelationMatrix(m1);
+        graph1.printRelationMatrix();
+        graph2.setRelationMatrix(m2);
+        graph2.printRelationMatrix();
+        System.out.println("Isomorphic: " + graph1.isIsomorphicWith(graph2));
+        
+        for(int i = 0; i < 120; i++){
+            int[] testPermutation = generateNthPermutation(i,5);
+            System.out.print(i + ". permutation: ");
+            for (int j = 0; j < testPermutation.length; j++) {
+                System.out.print(testPermutation[j]+1);
+                if (j < testPermutation.length - 1)
+                    System.out.print(", ");
+            }
+            System.out.println();
+        }
     }
 }
