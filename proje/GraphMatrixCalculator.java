@@ -1,3 +1,4 @@
+package proje;
 import java.util.Arrays;
 
 class GraphMatrixCalculator {

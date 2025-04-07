@@ -1,3 +1,4 @@
+package proje;
 import java.util.Scanner;
 
 public class Graph {
@@ -135,10 +136,10 @@ public class Graph {
     }
 
     // graph generating algorithm
-    public void generateGraph() {
+    public boolean generateGraph() {
         if (!isValidDegreeSequence()) {
             System.out.println("Invalid degree sequence (sum is odd).");
-            return;
+            return false;
         }
 
         for (int attempt = 0; attempt < 100; attempt++) {
@@ -206,11 +207,12 @@ public class Graph {
             if (success) {
                 this.relationMatrix = tempMatrix;
                 this.valid = true;
-                return;
+                return true;
             }
         }
 
         System.out.println("A valid graph could not be generated");
+        return false;
     }
 
     // printing relation matrix

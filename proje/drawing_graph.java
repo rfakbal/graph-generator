@@ -1,3 +1,4 @@
+package proje;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
@@ -239,6 +240,14 @@ public class drawing_graph {
             
             i += 2;
         }
+    }
+    public board draw_graph(int[][] relation,board t,int size) {
+    	int[] reduced_relation,locations;
+    	reduced_relation=relatecheck(size,relation);
+    	t.random_node_place(size, t.getTablo(), 0);
+    	locations=location_finder(size, t.getTablo());
+    	shortest_way_finder(t.getTablo(), reduced_relation, locations);
+    	return t;
     }
     
 

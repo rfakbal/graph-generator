@@ -1,8 +1,7 @@
+package proje;
 import java.util.Random;
-
 public class board {
     int[][] tablo;
-
     public board() {
         tablo = new int[25][37];
         int a;
@@ -22,17 +21,25 @@ public class board {
     public void tabloyuYazdir() {
         for (int i = 0; i < 25; i++) {
             for (int j = 0; j < 37; j++) {
-                if (tablo[i][j] > 64) {
-                    System.out.print((char) tablo[i][j] + " ");
+                if (tablo[i][j] == 0) {
+                    System.out.print("  ");
                 } else {
-                    System.out.print(tablo[i][j] + " ");
+                    if (tablo[i][j] > 64) {
+                        System.out.print((char) tablo[i][j] + " ");
+                    } else {
+                        System.out.print(tablo[i][j] + " ");
+                    }
                 }
             }
             System.out.println();
         }
     }
-    
-      
+
+
+
+    public int[][] get_board(){
+    	return tablo;
+    }
     
 
     public int[][] getTablo() {
