@@ -22,12 +22,16 @@ public class board {
         for (int i = 0; i < 25; i++) {
             for (int j = 0; j < 37; j++) {
                 if (tablo[i][j] == 0) {
-                    System.out.print("  ");
+                	if((i % 4== 0 && j % 4 == 0)&&tablo[i][j]<65) {
+                		System.out.print(".");
+                	}
+                	else {
+                    System.out.print(" ");}
                 } else {
                     if (tablo[i][j] > 64) {
-                        System.out.print((char) tablo[i][j] + " ");
+                        System.out.print((char) tablo[i][j]);
                     } else {
-                        System.out.print(tablo[i][j] + " ");
+                        System.out.print(tablo[i][j]);
                     }
                 }
             }
@@ -47,8 +51,11 @@ public class board {
     }
 
     public void random_node_place(int count_of_node, int[][] board, int count) {
-        int i = 0, j = 0;
-        Random rand = new Random();
+    	
+    	Random rand = new Random();
+    	int i = rand.nextInt(25);
+        int j = rand.nextInt(37);
+        
         while(count_of_node>0){
         while ((i % 4 != 0 || j % 4 != 0)||board[i][j]>64) {
             i = rand.nextInt(25);
