@@ -1,4 +1,5 @@
 package proje;
+
 import java.util.Scanner;
 
 public class Graph {
@@ -38,33 +39,6 @@ public class Graph {
         return sum % 2 == 0;
     }
 
-    // check if degree array is valid (checking if the graph possible)
-    private boolean isGraphPossible(int[] degrees) {
-        sortAscending(degrees);
-        int n = degrees.length;
-
-        for (int i = n - 1; i >= 0; i--) {
-            if (degrees[i] < 0)
-                return false;
-            int first = degrees[i];
-            if (first == 0)
-                continue;
-
-            if (first > i)
-                return false;
-
-            for (int j = i - 1; j >= i - first; j--) {
-                degrees[j]--;
-                if (degrees[j] < 0)
-                    return false;
-            }
-
-            degrees[i] = 0;
-            sortAscending(degrees);
-        }
-
-        return true;
-    }
 
     // using bubble sort, sorts the array is ascending order
     private void sortAscending(int[] arr) {
@@ -215,6 +189,45 @@ public class Graph {
         return false;
     }
 
+    public static boolean generateGraphUsingInterval() {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter the number of nodes: ");
+        int nodeCount = sc.nextInt();
+    
+        System.out.print("Enter the minimum degree: ");
+        int minDegree = sc.nextInt();
+    
+        System.out.print("Enter the maximum degree: ");
+        int maxDegree = sc.nextInt();
+    
+        int[] degrees = new int[nodeCount];
+        int attempt = 0;
+    
+        // try to find a valid degree sequence to generate a graph
+        while (attempt < 1000) {
+            int sum = 0;
+            for (int i = 0; i < nodeCount; i++) {
+                degrees[i] = minDegree + (int) (Math.random() * (maxDegree - minDegree + 1));
+                sum += degrees[i];
+            }
+    
+            if (sum % 2 == 0) {
+                Graph graph = new Graph(nodeCount, degrees);
+                if (graph.generateGraph()) {
+                    System.out.println("\nGenerated Graph from Interval:");
+                    graph.printRelationMatrix();
+                    return true;
+                }
+            }
+    
+            attempt++;
+        }
+    
+        System.out.println("Couldn't generate a valid graph with the given interval after many attempts.");
+        return false;
+    }
+    
+
     // printing relation matrix
     public void printRelationMatrix() {
         if (this.valid) {
@@ -238,28 +251,29 @@ public class Graph {
 
     // method to check if two graphs are isomorphic
     public boolean isIsomorphicWith(Graph other) {
-        if (this.nodeCount != other.nodeCount){
+        if (this.nodeCount != other.nodeCount) {
             return false;
         }
-            
+
         int[][] otherMatrix = other.getRelationMatrix();
         int[] perm = new int[nodeCount];
-        for (int i = 0; i < nodeCount; i++){
+        for (int i = 0; i < nodeCount; i++) {
             perm[i] = i;
         }
-            
+
         int totalPermutations = factorialCalculate(nodeCount);
 
         for (int count = 0; count < totalPermutations; count++) {
             int[] currentPerm = generateNthPermutation(count, nodeCount);
-            /*System.out.print(count + ". permutation: [");
-            for (int i = 0; i < currentPerm.length; i++) {
-                System.out.print(currentPerm[i]);
-                if (i < currentPerm.length - 1)
-                    System.out.print(", ");
-            }
-            System.out.println("]");
-            */
+            /*
+             * System.out.print(count + ". permutation: [");
+             * for (int i = 0; i < currentPerm.length; i++) {
+             * System.out.print(currentPerm[i]);
+             * if (i < currentPerm.length - 1)
+             * System.out.print(", ");
+             * }
+             * System.out.println("]");
+             */
             if (areMatricesEqualWithPermutation(this.relationMatrix, otherMatrix, currentPerm)) {
                 System.out.println("Isomorphic at permutation index: " + count);
                 return true;
@@ -338,6 +352,13 @@ public class Graph {
         for (int i = 0; i < 10; i++) {
             System.out.println();
         }
+        
+        if (generateGraphUsingInterval()) {
+            System.out.println("Graph successfully generated.");
+        } else {
+            System.out.println("Graph generation failed.");
+        }
+
         int[] testDegrees = { 4, 3, 3, 3, 3, 2, 2, 2, 2 };
         Graph graph1 = new Graph(9, testDegrees);
         graph1.generateGraph();
@@ -371,12 +392,12 @@ public class Graph {
         graph2.setRelationMatrix(m2);
         graph2.printRelationMatrix();
         System.out.println("Isomorphic: " + graph1.isIsomorphicWith(graph2));
-        
-        for(int i = 0; i < 120; i++){
-            int[] testPermutation = generateNthPermutation(i,5);
+
+        for (int i = 0; i < 120; i++) {
+            int[] testPermutation = generateNthPermutation(i, 5);
             System.out.print(i + ". permutation: ");
             for (int j = 0; j < testPermutation.length; j++) {
-                System.out.print(testPermutation[j]+1);
+                System.out.print(testPermutation[j] + 1);
                 if (j < testPermutation.length - 1)
                     System.out.print(", ");
             }
