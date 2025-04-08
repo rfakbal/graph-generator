@@ -189,7 +189,7 @@ public class Graph {
         return false;
     }
 
-    public static boolean generateGraphUsingInterval() {
+    public static Graph generateGraphUsingInterval() {
         Scanner sc = new Scanner(System.in);
         System.out.print("Enter the number of nodes: ");
         int nodeCount = sc.nextInt();
@@ -216,15 +216,14 @@ public class Graph {
                 if (graph.generateGraph()) {
                     System.out.println("\nGenerated Graph from Interval:");
                     graph.printRelationMatrix();
-                    return true;
+                    return graph;
                 }
             }
-    
             attempt++;
         }
     
         System.out.println("Couldn't generate a valid graph with the given interval after many attempts.");
-        return false;
+        return null;
     }
     
 
@@ -353,11 +352,7 @@ public class Graph {
             System.out.println();
         }
         
-        if (generateGraphUsingInterval()) {
-            System.out.println("Graph successfully generated.");
-        } else {
-            System.out.println("Graph generation failed.");
-        }
+       graph = Graph.generateGraphUsingInterval();
 
         int[] testDegrees = { 4, 3, 3, 3, 3, 2, 2, 2, 2 };
         Graph graph1 = new Graph(9, testDegrees);

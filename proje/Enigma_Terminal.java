@@ -22,6 +22,8 @@ public class Enigma_Terminal {
     public board main_graph = null;
     public board seconday_graph = null;
     public board[] depotGraphs = new board[9];
+    Graph mainGraph;
+    Graph secondaryGraph;
     
     // Standard variables
     public int mousepr, mousex, mousey, keypr, rkey;
@@ -103,28 +105,37 @@ public class Enigma_Terminal {
         boolean flag = true;
         int verticle = 0, node;
         Graph g = null;
-
-        while (flag) {
-            System.out.println("Number of verticles:");
-            verticle = Integer.parseInt(cn.readLine());  
-            int[] nodes = new int[verticle];
-            for (int i = 0; i < verticle; i++) {
-                System.out.println("Enter degree for vertex " + (char)('A' + i) + ":");
-                node = Integer.parseInt(cn.readLine());  
-                nodes[i] = node;
-            }
-            
-            g = new Graph(verticle, nodes);
-
-            if (g.generateGraph()) {
-                clearConsole(cn);
-                flag = false;
-            } else {
-                clearConsole(cn);
-                System.out.println("Invalid degree sequence. Please try again.");
+        System.out.println("1. Generate graph with degree sequence (key: 1)");
+        System.out.println("2. Generate graph with interval (key: 2)");
+        int selection = Integer.parseInt(cn.readLine());
+        if(selection==1){
+            while (flag) {
+                System.out.println("Number of verticles:");
+                verticle = Integer.parseInt(cn.readLine());  
+                int[] nodes = new int[verticle];
+                for (int i = 0; i < verticle; i++) {
+                    System.out.println("Enter degree for vertex " + (char)('A' + i) + ":");
+                    node = Integer.parseInt(cn.readLine());  
+                    nodes[i] = node;
+                }
+                
+                g = new Graph(verticle, nodes);
+                mainGraph = g;
+    
+                if (g.generateGraph()) {
+                    clearConsole(cn);
+                    flag = false;
+                } else {
+                    clearConsole(cn);
+                    System.out.println("Invalid degree sequence. Please try again.");
+                }
             }
         }
-
+        else if(selection==2){
+            g = Graph.generateGraphUsingInterval();
+        }
+        
+        verticle = g.getRelationMatrix()[0].length;
         matrix = g.getRelationMatrix();
         main_graph = new board();
         //seconday_graph = new board();
@@ -220,7 +231,7 @@ public class Enigma_Terminal {
                 if(seconday_graph == null) {
                     System.out.println("Secondary graph not created!");
                 } else {
-                    System.out.println(checkIsomorphic(matrix, seconday_graph.getTablo()) ? "Yes" : "No");
+                    System.out.println(checkIsomorphic(mainGraph,secondaryGraph) ? "Yes" : "No");
                 }
                 break;
         }
@@ -298,6 +309,7 @@ public class Enigma_Terminal {
     }
 
     private void copyBoard(board source, board target) {
+        secondaryGraph = mainGraph;
         int[][] sourceTablo = source.getTablo();
         int[][] targetTablo = target.getTablo();
         for (int i = 0; i < 25; i++) {
@@ -437,8 +449,8 @@ public class Enigma_Terminal {
         return "";
     }
 
-    private boolean checkIsomorphic(int[][] matrix1, int[][] matrix2) {
-        return false;
+    private boolean checkIsomorphic(Graph graph1, Graph graph2){
+         return graph1.isIsomorphicWith(graph2);
     }
 
     private void loadGraphFromFile(String filename, boolean isMain) {

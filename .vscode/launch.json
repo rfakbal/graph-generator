@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Java: Enigma_Terminal’i Çalıştır",
+      "request": "launch",
+      "mainClass": "Enigma_Terminal",
+      "classPaths": [
+        "proje",
+        "bin/lib/Enigma-Edited2.jar"
+      ]
+    }
+  ]
+}

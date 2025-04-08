@@ -1,6 +1,6 @@
 {
     "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "/Users/rusenakbal/Downloads/Mouse Keyboard Standard Code/Enigma-Edited2.jar"
+      "bin/lib/Enigma-Edited2.jar"
     ]
-}
+  }
+  
