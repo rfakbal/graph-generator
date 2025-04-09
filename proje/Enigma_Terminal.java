@@ -87,6 +87,9 @@ public class Enigma_Terminal {
                     			keypr=1;
                     			break;
                     		}
+                    		else {
+                    			keypr=0;
+                    		}
                     	}
                     Thread.sleep(20);
                     }
