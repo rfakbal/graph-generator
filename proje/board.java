@@ -38,14 +38,6 @@ public class board {
             System.out.println();
         }
     }
-
-
-
-    public int[][] get_board(){
-    	return tablo;
-    }
-    
-
     public int[][] getTablo() {
         return tablo;
     }

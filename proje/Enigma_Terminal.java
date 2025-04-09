@@ -15,15 +15,19 @@ import java.util.Queue;
 import java.util.Scanner;
 
 public class Enigma_Terminal {
-    public enigma.console.Console cn = Enigma.getConsole("Mouse and Keyboard",120,20,15);
+    public enigma.console.Console cn = Enigma.getConsole("Graph Calculator",120,20,15);
     public TextMouseListener tmlis; 
     public KeyListener klis; 
     public int[][] matrix;
     public board main_graph = null;
     public board seconday_graph = null;
+    public board temp_graph = null;
     public board[] depotGraphs = new board[9];
     Graph mainGraph;
     Graph secondaryGraph;
+    Graph g=null;
+    public int penalty=0;
+    public int verticle=0;
     
     // Standard variables
     public int mousepr, mousex, mousey, keypr, rkey;
@@ -60,11 +64,32 @@ public class Enigma_Terminal {
             if (keypr == 1) {
                 if (rkey == KeyEvent.VK_Z) {
                     clearConsole(cn);
-                    graph_generate_menu();
+                    graph_generate_menu(true);
                     System.out.println("Main Graph");
                     main_graph.tabloyuYazdir();
                     printMatrix(matrix,50,0,"RELATION");
-                    press_backspace_to_back();
+                    System.out.println("C pen:"+penalty);
+                    cn.getTextWindow().setCursorPosition(50, verticle+3);
+                    System.out.println("Press 'X' to improving mode");
+                    keypr=0;
+                    while(true) {
+                    	if(keypr == 1) {
+                    		if(rkey == KeyEvent.VK_X) {
+                                cn.getTextWindow().setCursorPosition(50, verticle+4);
+                                System.out.println("Bc pen:"+penalty);
+                                cn.getTextWindow().setCursorPosition(50, verticle+5);
+                                System.out.println("Try:0");
+                                press_x_to_improve_graph();
+                    		}
+                    		else if(rkey == KeyEvent.VK_BACK_SPACE) {
+                    			clearConsole(cn);
+                    			main_menu();
+                    			keypr=1;
+                    			break;
+                    		}
+                    	}
+                    Thread.sleep(20);
+                    }
                 }
                 else if(rkey == KeyEvent.VK_X) {
                     clearConsole(cn);
@@ -98,13 +123,79 @@ public class Enigma_Terminal {
             Thread.sleep(20);
         }
     }
-
-    public void graph_generate_menu() {
+    public void press_x_to_improve_graph() throws Exception{
+    	int Bc_penalty=999999999;
+    	int try_count=0;
+        while (true) {
+            if (keypr == 1) {
+                if (rkey == KeyEvent.VK_X) {
+                    clearConsole(cn);
+                    graph_generate_menu(false);
+                    System.out.println("Main Graph");
+                    main_graph.tabloyuYazdir();
+                    printMatrix(matrix,50,0,"RELATION");
+                    System.out.println("C pen:"+penalty);
+                    if(penalty<Bc_penalty) {
+                    	Bc_penalty=penalty;
+                    	temp_graph=main_graph;
+                    }
+                    cn.getTextWindow().setCursorPosition(50, verticle+3);
+                    System.out.println("Bc pen:"+Bc_penalty);
+                    cn.getTextWindow().setCursorPosition(50, verticle+4);
+                    System.out.println("Try:"+try_count);
+                    cn.getTextWindow().setCursorPosition(50, verticle+5);
+                    System.out.println("Press 'X' to improve graph");
+                    cn.getTextWindow().setCursorPosition(50, verticle+6);
+                    System.out.println("Press 'Q' to quit improve mod");
+                    cn.getTextWindow().setCursorPosition(50, verticle+7);
+                    System.out.println("Press 'B' to set Main Graph with best option");
+                    try_count++;
+                }
+                if(rkey == KeyEvent.VK_Q) {
+                	clearConsole(cn);
+                	System.out.println("Main Graph");
+                    main_graph.tabloyuYazdir();
+                    printMatrix(matrix,50,0,"RELATION");
+                    System.out.println("C pen:"+penalty);
+                    cn.getTextWindow().setCursorPosition(50, verticle+3);
+                    System.out.println("Bc pen:"+Bc_penalty);
+                    cn.getTextWindow().setCursorPosition(50, verticle+4);
+                    System.out.println("Try:"+try_count);
+                    press_backspace_to_back();
+                	break;
+                }
+                if(rkey == KeyEvent.VK_B) {
+                	if(temp_graph==null) {
+                		clearConsole(cn);
+                		press_backspace_to_back();
+                	}
+                	else {
+                		penalty=Bc_penalty;
+                		clearConsole(cn);
+                		main_graph=temp_graph;
+                        System.out.println("Main Graph");
+                        main_graph.tabloyuYazdir();
+                        printMatrix(matrix,50,0,"RELATION");
+                        System.out.println("C pen:"+penalty);
+                        if(penalty<Bc_penalty) Bc_penalty=penalty;
+                        cn.getTextWindow().setCursorPosition(50, verticle+3);
+                        System.out.println("Bc pen:"+Bc_penalty);
+                        cn.getTextWindow().setCursorPosition(50, verticle+4);
+                        System.out.println("Press 'Q' to quit improve mode");
+                	}
+                }
+                keypr = 0;
+            }
+            Thread.sleep(20);
+        }
+    }
+    public void graph_generate_menu(boolean flag2) {
     	//cn.getTextWindow().setCursorPosition(0, 0);
-        System.out.println("Graph Generate Menu");
+    	
         boolean flag = true;
-        int verticle = 0, node;
-        Graph g = null;
+        int node;
+        if(flag2) {
+        System.out.println("Graph Generate Menu");
         System.out.println("1. Generate graph with degree sequence (key: 1)");
         System.out.println("2. Generate graph with interval (key: 2)");
         int selection = Integer.parseInt(cn.readLine());
@@ -137,16 +228,20 @@ public class Enigma_Terminal {
         
         verticle = g.getRelationMatrix()[0].length;
         matrix = g.getRelationMatrix();
+        }
         main_graph = new board();
         //seconday_graph = new board();
+        
         drawing_graph dg = new drawing_graph();
         main_graph = dg.draw_graph(matrix, main_graph, verticle);
+        penalty=dg.get_penalty();
         //seconday_graph = dg.draw_graph(matrix, seconday_graph, verticle);
     }
 
     public void test_menu() throws Exception {
         main_graph.tabloyuYazdir();
         printMatrix(matrix,50,0,"RELATION");
+        System.out.print("pen:"+penalty);
         GraphMatrixCalculator calc = new GraphMatrixCalculator(matrix);
         cn.getTextWindow().setCursorPosition(50,14);
         System.out.println("Graph Test Menu");
