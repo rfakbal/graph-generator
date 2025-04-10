@@ -76,12 +76,13 @@ public class Enigma_Terminal {
                     clearConsole(cn);
                     graph_generate_menu(true);
                     System.out.println("Main Graph");
-                    main_graph.tabloyuYazdir();
+                    main_graph.tabloyuYazdir(1);
                     printMatrix(matrix, 50, 0, "RELATION");
                     System.out.println("C pen:" + penalty);
                     cn.getTextWindow().setCursorPosition(50, verticle + 3);
                     System.out.println("Press 'X' to improving mode");
                     keypr = 0;
+                    int draw_mode=0,a=0;
                     while (true) {
                         if (keypr == 1) {
                             if (rkey == KeyEvent.VK_X) {
@@ -95,7 +96,26 @@ public class Enigma_Terminal {
                                 main_menu();
                                 keypr = 1;
                                 break;
-                            } else {
+                            }                    		else if(rkey == KeyEvent.VK_D) {
+                    			if(draw_mode>2) {
+                    				draw_mode=0;
+                    			}
+                    			draw_mode++;
+                    			 clearConsole(cn);
+                                 System.out.println("Main Graph");
+                                 main_graph.tabloyuYazdir(draw_mode);
+                                 printMatrix(matrix,50,0,"RELATION");
+                                 System.out.println("C pen:"+penalty);
+                                 cn.getTextWindow().setCursorPosition(50, verticle+4);
+                                 a=draw_mode-1;
+                                 cn.getTextWindow().setCursorPosition(50, verticle+3);
+                                 System.out.println("Press 'X' to improving mode");
+                                 cn.getTextWindow().setCursorPosition(50, verticle+4);
+                                 System.out.println("Draw:"+a);
+                                 keypr=0;
+                    			//default 0  
+                    		}
+                            else {
                                 keypr = 0;
                             }
                         }
@@ -119,7 +139,7 @@ public class Enigma_Terminal {
                         System.out.println("Secondary graph is null");
                     } else {
                         System.out.println("Secondary Graph");
-                        seconday_graph.tabloyuYazdir();
+                        seconday_graph.tabloyuYazdir(1);
                         printMatrix(matrix, 50, 0, "RELATION");
                     }
                     press_backspace_to_back();
@@ -133,44 +153,73 @@ public class Enigma_Terminal {
     public void press_x_to_improve_graph() throws Exception {
         int Bc_penalty = 999999999;
         int try_count = 0;
+        int draw_mode=1,a=0;
         while (true) {
             if (keypr == 1) {
                 if (rkey == KeyEvent.VK_X) {
                     clearConsole(cn);
                     graph_generate_menu(false);
                     System.out.println("Main Graph");
-                    main_graph.tabloyuYazdir();
+                    main_graph.tabloyuYazdir(1);
                     printMatrix(matrix, 50, 0, "RELATION");
                     System.out.println("C pen:" + penalty);
                     if (penalty < Bc_penalty) {
                         Bc_penalty = penalty;
                         temp_graph = main_graph;
                     }
-                    cn.getTextWindow().setCursorPosition(50, verticle + 3);
-                    System.out.println("Bc pen:" + Bc_penalty);
-                    cn.getTextWindow().setCursorPosition(50, verticle + 4);
-                    System.out.println("Try:" + try_count);
-                    cn.getTextWindow().setCursorPosition(50, verticle + 5);
+                    cn.getTextWindow().setCursorPosition(50, verticle+3);
+                    System.out.println("Bc pen:"+Bc_penalty);
+                    cn.getTextWindow().setCursorPosition(50, verticle+4);
+                    System.out.println("Try:"+try_count);
+                    cn.getTextWindow().setCursorPosition(50, verticle+6);
                     System.out.println("Press 'X' to improve graph");
-                    cn.getTextWindow().setCursorPosition(50, verticle + 6);
-                    System.out.println("Press 'Q' to quit improve mod");
-                    cn.getTextWindow().setCursorPosition(50, verticle + 7);
+                    cn.getTextWindow().setCursorPosition(50, verticle+7);
+                    System.out.println("Press 'Q' to set current graph to Main Graph");
+                    cn.getTextWindow().setCursorPosition(50, verticle+8);
                     System.out.println("Press 'B' to set Main Graph with best option");
+                    cn.getTextWindow().setCursorPosition(50, verticle+5);
+                    a=draw_mode-1;
+                    System.out.println("Draw:"+a);
                     try_count++;
                 }
                 if (rkey == KeyEvent.VK_Q) {
                     clearConsole(cn);
                     System.out.println("Main Graph");
-                    main_graph.tabloyuYazdir();
+                    main_graph.tabloyuYazdir(1);
                     printMatrix(matrix, 50, 0, "RELATION");
                     System.out.println("C pen:" + penalty);
                     cn.getTextWindow().setCursorPosition(50, verticle + 3);
                     System.out.println("Bc pen:" + Bc_penalty);
                     cn.getTextWindow().setCursorPosition(50, verticle + 4);
                     System.out.println("Try:" + try_count);
-                    press_backspace_to_back();
                     break;
                 }
+        		if(rkey == KeyEvent.VK_D) {
+        			if(draw_mode>2) {
+        				draw_mode=0;
+        			}
+        			clearConsole(cn);
+        			System.out.println("Main Graph");
+        			main_graph.tabloyuYazdir(draw_mode);
+                    cn.getTextWindow().setCursorPosition(50, verticle+3);
+                    System.out.println("Bc pen:"+Bc_penalty);
+                    cn.getTextWindow().setCursorPosition(50, verticle+4);
+                    System.out.println("Try:"+try_count);
+                    cn.getTextWindow().setCursorPosition(50, verticle+6);
+                    System.out.println("Press 'X' to improve graph");
+                    cn.getTextWindow().setCursorPosition(50, verticle+7);
+                    System.out.println("Press 'Q' to set current graph to Main Graph");
+                    cn.getTextWindow().setCursorPosition(50, verticle+8);
+                    System.out.println("Press 'B' to set Main Graph with best option");
+        			draw_mode++;
+                     printMatrix(matrix,50,0,"RELATION");
+                     System.out.println("C pen:"+penalty);
+                     cn.getTextWindow().setCursorPosition(50, verticle+5);
+                     a=draw_mode-1;
+                     System.out.println("Draw:"+a);
+                     keypr=0;
+        			//default 0  
+        		}
                 if (rkey == KeyEvent.VK_B) {
                     if (temp_graph == null) {
                         clearConsole(cn);
@@ -180,7 +229,7 @@ public class Enigma_Terminal {
                         clearConsole(cn);
                         main_graph = temp_graph;
                         System.out.println("Main Graph");
-                        main_graph.tabloyuYazdir();
+                        main_graph.tabloyuYazdir(1);
                         printMatrix(matrix, 50, 0, "RELATION");
                         System.out.println("C pen:" + penalty);
                         if (penalty < Bc_penalty)
@@ -247,7 +296,7 @@ public class Enigma_Terminal {
     }
 
     public void test_menu() throws Exception {
-        main_graph.tabloyuYazdir();
+        main_graph.tabloyuYazdir(1);
         printMatrix(matrix, 50, 0, "RELATION");
         System.out.print("pen:" + penalty);
         GraphMatrixCalculator calc = new GraphMatrixCalculator(matrix);
@@ -712,7 +761,7 @@ public class Enigma_Terminal {
     
         cn.getTextWindow().setCursorPosition(graphMainX, graphStartY);
         System.out.println("Main Graph");
-        main_graph.tabloyuYazdir();
+        main_graph.tabloyuYazdir(1);
     
         cn.getTextWindow().setCursorPosition(graphSecondX, graphStartY);
         System.out.println("Secondary Graph");
