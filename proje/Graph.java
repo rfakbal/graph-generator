@@ -224,8 +224,8 @@ public class Graph {
             if (sum % 2 == 0) {
                 Graph graph = new Graph(nodeCount, degrees);
                 if (graph.generateGraph()) {
-                    System.out.println("\nGenerated Graph from Interval:");
-                    graph.printRelationMatrix();
+                    //System.out.println("\nGenerated Graph from Interval:");
+                    //graph.printRelationMatrix();
                     return graph;
                 }
             }

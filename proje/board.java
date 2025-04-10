@@ -1,5 +1,7 @@
 package proje;
 import java.util.Random;
+
+import enigma.console.TextWindow;
 public class board {
     int[][] tablo;
     public board() {
@@ -41,6 +43,27 @@ public class board {
     public int[][] getTablo() {
         return tablo;
     }
+
+    public void printBoardWithCursor(int startCol, int startRow, TextWindow tw) {
+    for (int i = 0; i < 25; i++) {
+        tw.setCursorPosition(startCol, startRow + i);
+        for (int j = 0; j < 37; j++) {
+            if (tablo[i][j] == 0) {
+                if ((i % 4 == 0 && j % 4 == 0) && tablo[i][j] < 65) {
+                    System.out.print(".");
+                } else {
+                    System.out.print(" ");
+                }
+            } else {
+                if (tablo[i][j] > 64) {
+                    System.out.print((char) tablo[i][j]);
+                } else {
+                    System.out.print(tablo[i][j]);
+                }
+            }
+        }
+    }
+}
 
     public void random_node_place(int count_of_node, int[][] board, int count) {
     	

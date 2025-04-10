@@ -231,6 +231,7 @@ public class Enigma_Terminal {
                 }
             } else if (selection == 2) {
                 g = Graph.generateGraphUsingInterval();
+                mainGraph = g;
             }
 
             verticle = g.getRelationMatrix()[0].length;
@@ -673,56 +674,91 @@ public class Enigma_Terminal {
         }
     }
 
+    private void printSimpleMatrix(int[][] matrix, int startRow, int startCol, String name) {
+        cn.getTextWindow().setCursorPosition(startCol, startRow);
+        System.out.print(name);
+    
+        cn.getTextWindow().setCursorPosition(startCol, startRow + 1);
+        System.out.print("  ");
+        for (int i = 0; i < matrix.length; i++) {
+            System.out.print((char) ('A' + i));
+        }
+    
+        for (int i = 0; i < matrix.length; i++) {
+            cn.getTextWindow().setCursorPosition(startCol, startRow + 2 + i);
+            System.out.print((char) ('A' + i) + " ");
+            for (int j = 0; j < matrix[i].length; j++) {
+                System.out.print(matrix[i][j]);
+            }
+        }
+    }
+    
+    
+    
+
     private void displayIsomorphismResult() {
         clearConsole(cn);
-
-        if (mainGraph == null || secondaryGraph == null || alteredMatrix == null || permutedNodeNames == null) {
+    
+        if (main_graph == null || seconday_graph == null || mainGraph == null || secondaryGraph == null || alteredMatrix == null || permutedNodeNames == null) {
             System.out.println("Graphs not ready for isomorphism display.");
             return;
         }
-
+    
         int size = mainGraph.getRelationMatrix().length;
-        int startY = 2;
-        int spacing = size + 10;
-
-        int mainX = 2;
-        int secondaryX = mainX + spacing;
-        int alteredX = secondaryX + spacing;
-
-        // printing matrices 
-        printMatrix(mainGraph.getRelationMatrix(), mainX, startY, "MAIN");
-        printMatrix(secondaryGraph.getRelationMatrix(), secondaryX, startY, "SECONDARY");
-        printPermutedMatrix(alteredMatrix, alteredX, startY, "ALTERED", permutedNodeNames);
-
-
-        cn.getTextWindow().setCursorPosition(mainX, startY + size + 4);
-        System.out.println(" ISOMORPHIC");
+    
+        int graphStartY = 0;
+        int graphMainX = 2;
+        int graphSecondX = 80;
+    
+        cn.getTextWindow().setCursorPosition(graphMainX, graphStartY);
+        System.out.println("Main Graph");
+        main_graph.tabloyuYazdir();
+    
+        cn.getTextWindow().setCursorPosition(graphSecondX, graphStartY);
+        System.out.println("Secondary Graph");
+        seconday_graph.printBoardWithCursor(graphSecondX, graphStartY + 1, cn.getTextWindow());
+    
+        int matrixStartY = 12;
+        int mainMatrixX = 40;               
+        int alteredMatrixY = matrixStartY + size + 2;
+        int secondMatrixX = 50;             
+    
+        printSimpleMatrix(mainGraph.getRelationMatrix(), matrixStartY, mainMatrixX, "MAIN");
+        printPermutedMatrix(alteredMatrix, alteredMatrixY, mainMatrixX, "ALTERED", permutedNodeNames);
+        printSimpleMatrix(secondaryGraph.getRelationMatrix(), matrixStartY + size + 2, secondMatrixX, "SECONDARY");
+    
+        cn.getTextWindow().setCursorPosition(mainMatrixX, alteredMatrixY + size + 4);
+        System.out.println("Isomorphic");
+    
+        cn.getTextWindow().setCursorPosition(mainMatrixX, alteredMatrixY + size + 6);
+        System.out.println("Press BACKSPACE to return.");
     }
+    
+    
+    
+    
+    
 
-    private void printPermutedMatrix(int[][] matrix, int starty, int startx, String name, char[] names) {
-        cn.getTextWindow().setCursorPosition(starty, startx);
+    private void printPermutedMatrix(int[][] matrix, int startRow, int startCol, String name, char[] names) {
+        cn.getTextWindow().setCursorPosition(startCol, startRow);
         System.out.print(name);
-        startx++;
-
-        // column names
-        cn.getTextWindow().setCursorPosition(starty, startx);
+    
+        cn.getTextWindow().setCursorPosition(startCol, startRow + 1);
         System.out.print("  ");
-        for (int i = 0; i < names.length; i++) {
-            System.out.print(names[i]);
+        for (char c : names) {
+            System.out.print(c);
         }
-        System.out.println();
-
-        // row names and values
-        cn.getTextWindow().setCursorPosition(starty, startx + 1);
+    
         for (int i = 0; i < matrix.length; i++) {
+            cn.getTextWindow().setCursorPosition(startCol, startRow + 2 + i);
             System.out.print(names[i] + " ");
             for (int j = 0; j < matrix[i].length; j++) {
                 System.out.print(matrix[i][j]);
             }
-            cn.getTextWindow().setCursorPosition(starty, startx + 2 + i);
         }
     }
-
+    
+    
     public static void main(String[] args) throws Exception {
         new Enigma_Terminal();
     }
