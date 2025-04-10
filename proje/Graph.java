@@ -8,6 +8,8 @@ public class Graph {
     private char[] nodeNames;
     private int[][] relationMatrix;
     private boolean valid;
+    private int[][] alteredMatrix; // isomorphic matrix
+    private char[] permutedNodeNames; // permuted node names
 
     public Graph(int nodeCount, int[] degrees) {
         this.nodeCount = nodeCount;
@@ -31,6 +33,14 @@ public class Graph {
 
     public boolean isValid() {
         return this.valid;
+    }
+
+    public int[][] getAlteredMatrix() {
+        return this.alteredMatrix;
+    }
+
+    public char[] getPermutedNodeNames() {
+        return this.permutedNodeNames;
     }
 
     // if sum of the degrees is odd then it is impossible to generate a graph
@@ -226,6 +236,22 @@ public class Graph {
         return null;
     }
     
+    public void printAlteredMatrix() {
+        System.out.print("  ");
+        for (char c : permutedNodeNames) {
+            System.out.print(c + " ");
+        }
+        System.out.println();
+    
+        for (int i = 0; i < nodeCount; i++) {
+            System.out.print(permutedNodeNames[i] + " ");
+            for (int j = 0; j < nodeCount; j++) {
+                System.out.print(alteredMatrix[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+    
 
     // printing relation matrix
     public void printRelationMatrix() {
@@ -253,45 +279,65 @@ public class Graph {
         if (this.nodeCount != other.nodeCount) {
             return false;
         }
-
+    
         int[][] otherMatrix = other.getRelationMatrix();
-        int[] perm = new int[nodeCount];
-        for (int i = 0; i < nodeCount; i++) {
-            perm[i] = i;
-        }
-
         int totalPermutations = factorialCalculate(nodeCount);
-
+    
         for (int count = 0; count < totalPermutations; count++) {
-            int[] currentPerm = generateNthPermutation(count, nodeCount);
-            /*
-             * System.out.print(count + ". permutation: [");
-             * for (int i = 0; i < currentPerm.length; i++) {
-             * System.out.print(currentPerm[i]);
-             * if (i < currentPerm.length - 1)
-             * System.out.print(", ");
-             * }
-             * System.out.println("]");
-             */
-            if (areMatricesEqualWithPermutation(this.relationMatrix, otherMatrix, currentPerm)) {
+            int[] perm = generateNthPermutation(count, nodeCount);
+
+            // check if the relation matrix of this graph is equal to the permuted version of the other graph's relation matrix
+            if (areMatricesEqualWithPermutation(this.relationMatrix, otherMatrix, perm)) {
                 System.out.println("Isomorphic at permutation index: " + count);
+    
+                // set the altered matrix to the permuted version of the relation matrix
+                this.alteredMatrix = new int[nodeCount][nodeCount];
+                for (int i = 0; i < nodeCount; i++) {
+                    for (int j = 0; j < nodeCount; j++) {
+                        this.alteredMatrix[i][j] = this.relationMatrix[perm[i]][perm[j]];
+                    }
+                }
+    
+                // update the permuted node names
+                this.permutedNodeNames = new char[nodeCount];
+                for (int i = 0; i < nodeCount; i++) {
+                    this.permutedNodeNames[i] = this.nodeNames[perm[i]];
+                }
+    
                 return true;
             }
         }
-
+    
         return false;
     }
+    
+    
+    
+
+    private int[][] getPermutedMatrix(int[][] matrix, int[] perm) {
+    int[][] result = new int[nodeCount][nodeCount];
+    for (int i = 0; i < nodeCount; i++) {
+        for (int j = 0; j < nodeCount; j++) {
+            result[i][j] = matrix[perm[i]][perm[j]];
+        }
+    }
+    return result;
+}
+
 
     // check if two matrices are equal after applying a permutation to one
     private boolean areMatricesEqualWithPermutation(int[][] m1, int[][] m2, int[] perm) {
         for (int i = 0; i < nodeCount; i++) {
             for (int j = 0; j < nodeCount; j++) {
-                if (m1[i][j] != m2[perm[i]][perm[j]])
+                if (m1[perm[i]][perm[j]] != m2[i][j]) {
                     return false;
+                }
             }
         }
         return true;
     }
+    
+    
 
     // generate nth permutation of a given size
     private static int[] generateNthPermutation(int n, int size) {
@@ -381,6 +427,7 @@ public class Graph {
                 { 0, 0, 0, 0, 1, 0, 0, 0, 1 },
                 { 0, 0, 0, 0, 0, 0, 1, 1, 0 }
         };
+        
 
         graph1.setRelationMatrix(m1);
         graph1.printRelationMatrix();
@@ -388,7 +435,7 @@ public class Graph {
         graph2.printRelationMatrix();
         System.out.println("Isomorphic: " + graph1.isIsomorphicWith(graph2));
 
-        for (int i = 0; i < 120; i++) {
+        /*for (int i = 0; i < 120; i++) {
             int[] testPermutation = generateNthPermutation(i, 5);
             System.out.print(i + ". permutation: ");
             for (int j = 0; j < testPermutation.length; j++) {
@@ -398,5 +445,14 @@ public class Graph {
             }
             System.out.println();
         }
+        */
+        int[][] alteredMatrix = graph1.getAlteredMatrix();
+        for(int i = 0;i<alteredMatrix.length;i++){
+            for(int j = 0;j<alteredMatrix[i].length;j++){
+                System.out.print(alteredMatrix[i][j]);
+            }
+            System.out.println();
+        }
+        graph1.printAlteredMatrix();
     }
 }

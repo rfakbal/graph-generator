@@ -28,6 +28,8 @@ public class Enigma_Terminal {
     Graph g=null;
     public int penalty=0;
     public int verticle=0;
+    public char[] permutedNodeNames; // Permuted node names for isomorphism check
+    public int[][] alteredMatrix; // Altered matrix for isomorphism check
     
     // Standard variables
     public int mousepr, mousex, mousey, keypr, rkey;
@@ -548,7 +550,12 @@ public class Enigma_Terminal {
     }
 
     private boolean checkIsomorphic(Graph graph1, Graph graph2){
-         return graph1.isIsomorphicWith(graph2);
+         boolean result =  graph1.isIsomorphicWith(graph2);
+         if(result){
+            alteredMatrix = graph1.getRelationMatrix();
+            permutedNodeNames = graph1.getPermutedNodeNames();
+         }
+         return result;
     }
 
     private void loadGraphFromFile(String filename, boolean isMain) {
