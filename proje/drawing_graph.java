@@ -6,52 +6,6 @@ import java.util.Scanner;
 public class drawing_graph {
 	public static int penalty=0;
 	private int verticle=0;
-
-    public static int node_calculator() {
-        int square_of_number_of_nodes = 0;
-        
-        try (FileReader reader = new FileReader("./graph_matrix.txt")) {
-            int character;
-            while ((character = reader.read()) != -1) {
-                if (character == '1' || character == '0') {
-                    square_of_number_of_nodes++;
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-        
-        int number_of_nodes = 0;
-        while (number_of_nodes * number_of_nodes != square_of_number_of_nodes) {
-            number_of_nodes++;
-        }
-        
-        return number_of_nodes;
-    }
-
-    public static int[][] array_creater(int size) {
-        int[][] relationMatrix = new int[size][size];
-        
-        try (FileReader reader = new FileReader("./graph_matrix.txt")) {
-            int character;
-            int row = 0;
-            int col = 0;
-            
-            while ((character = reader.read()) != -1) {
-                if (character == '1' || character == '0') {
-                    relationMatrix[row][col] = character - '0';
-                    col++;
-                    if (col == size) {
-                        col = 0;
-                        row++;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
-        return relationMatrix;
-    }
     public static int[] relatecheck(int size,int[][] arr){
         int row=65,column=65;
         int[] reduced_relation;
@@ -107,14 +61,14 @@ public class drawing_graph {
             if(type==1){//left
                 starting_y--;
                 if(board[starting_x][starting_y]<65) {board[starting_x][starting_y]++;if(board[starting_x][starting_y]>1)penalty++;}
-                else if(board[starting_x][starting_y]>64) {
+                else if(board[starting_x][starting_y]>64&&starting_y!=target_y) {
                 	penalty+=1000;
                 }
             }
             else{//right
                 starting_y++;
                 if(board[starting_x][starting_y]<65) {board[starting_x][starting_y]++;if(board[starting_x][starting_y]>1)penalty++;}
-                else if(board[starting_x][starting_y]>64) {
+                else if(board[starting_x][starting_y]>64&&starting_y!=target_y) {
                 	penalty+=1000;
                 }
             }
@@ -125,14 +79,14 @@ public class drawing_graph {
             if(type==1){//down
                 starting_x++;
                 if(board[starting_x][starting_y]<65) {board[starting_x][starting_y]++;if(board[starting_x][starting_y]>1)penalty++;}
-                else if(board[starting_x][starting_y]>64) {
+                else if(board[starting_x][starting_y]>64&&starting_x!=target_x) {
                 	penalty+=1000;
                 }
             }
             else{//up
                 starting_x--;
                 if(board[starting_x][starting_y]<65) {board[starting_x][starting_y]++;if(board[starting_x][starting_y]>1)penalty++;}
-                else if(board[starting_x][starting_y]>64) {
+                else if(board[starting_x][starting_y]>64&&starting_x!=target_x) {
                 	penalty+=1000;
                 }
             }
@@ -147,7 +101,7 @@ public class drawing_graph {
             starting_x--;
             starting_y++;
             if(board[starting_x][starting_y]<65) {board[starting_x][starting_y]++;if(board[starting_x][starting_y]>1)penalty++;}
-            else if(board[starting_x][starting_y]>64) {
+            else if(board[starting_x][starting_y]>64&&!(starting_y==target_y&&starting_x!=target_x)) {
             	penalty+=1000;
             }
         }
@@ -155,7 +109,7 @@ public class drawing_graph {
             starting_x--;
             starting_y--;
             if(board[starting_x][starting_y]<65) {board[starting_x][starting_y]++;if(board[starting_x][starting_y]>1)penalty++;}
-            else if(board[starting_x][starting_y]>64) {
+            else if(board[starting_x][starting_y]>64&&!(starting_y!=target_y&&starting_x!=target_x)) {
             	penalty+=1000;
             }
         }
@@ -163,7 +117,7 @@ public class drawing_graph {
             starting_x++;
             starting_y--;
             if(board[starting_x][starting_y]<65) {board[starting_x][starting_y]++;if(board[starting_x][starting_y]>1)penalty++;}
-            else if(board[starting_x][starting_y]>64) {
+            else if(board[starting_x][starting_y]>64&&!(starting_y!=target_y&&starting_x!=target_x)) {
             	penalty+=1000;
             }
         }
@@ -171,7 +125,7 @@ public class drawing_graph {
             starting_x++;
             starting_y++;
             if(board[starting_x][starting_y]<65) {board[starting_x][starting_y]++;if(board[starting_x][starting_y]>1)penalty++;}
-            else if(board[starting_x][starting_y]>64) {
+            else if(board[starting_x][starting_y]>64&&!(starting_y!=target_y&&starting_x!=target_x)) {
             	penalty+=1000;
             }
         }
@@ -278,7 +232,7 @@ public class drawing_graph {
     	return t;
     }
     public int get_penalty() {
-    	return penalty-verticle*1000;
+    	return penalty;
     }
     
 
@@ -304,7 +258,7 @@ public class drawing_graph {
         int[] locations;
         locations=location_finder(size, t.getTablo());
         shortest_way_finder(t.getTablo(),reduced_relation,locations);
-        t.tabloyuYazdir();
+        t.tabloyuYazdir(0);
         graph.printRelationMatrix();
     }
 }

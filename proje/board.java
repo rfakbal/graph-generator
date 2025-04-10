@@ -1,6 +1,6 @@
 package proje;
 import java.util.Random;
-
+import enigma.console.TextWindow;
 import enigma.console.TextWindow;
 public class board {
     int[][] tablo;
@@ -19,8 +19,28 @@ public class board {
             }
         }
     }
+    public void printBoardWithCursor(int startCol, int startRow, TextWindow tw) {
+        for (int i = 0; i < 25; i++) {
+            tw.setCursorPosition(startCol, startRow + i);
+            for (int j = 0; j < 37; j++) {
+                if (tablo[i][j] == 0) {
+                    if ((i % 4 == 0 && j % 4 == 0) && tablo[i][j] < 65) {
+                        System.out.print(".");
+                    } else {
+                        System.out.print(" ");
+                    }
+                } else {
+                    if (tablo[i][j] > 64) {
+                        System.out.print((char) tablo[i][j]);
+                    } else {
+                        System.out.print(tablo[i][j]);
+                    }
+                }
+            }
+        }
+    }
 
-    public void tabloyuYazdir() {
+    public void tabloyuYazdir(int drawing_mode) {
         for (int i = 0; i < 25; i++) {
             for (int j = 0; j < 37; j++) {
                 if (tablo[i][j] == 0) {
@@ -30,8 +50,40 @@ public class board {
                 	else {
                     System.out.print(" ");}
                 } else {
-                    if (tablo[i][j] > 64) {
-                        System.out.print((char) tablo[i][j]);
+                    if (tablo[i][j] > 0) {
+                    	if(drawing_mode==1) {
+                    		if(tablo[i][j]>64) {
+                    			System.out.print((char) tablo[i][j]);
+                    		}
+                    		else {
+                    			System.out.print(tablo[i][j]);
+                    		}
+                    	}
+                    	else if(drawing_mode==2) {
+                    		if(tablo[i][j]==1) {
+                    			System.out.print((char) 43);
+                    		}
+                    		else if(tablo[i][j]==2) {
+                    			System.out.print((char) 111);
+                    		}
+                    		else if(tablo[i][j]==3) {
+                    			System.out.print((char) 35);
+                    		}
+                    		else if(tablo[i][j]==4) {
+                    			System.out.print((char) 64);
+                    		}
+                    		else if(tablo[i][j]>64&&tablo[i][j]<100){
+                    			System.out.print((char)tablo[i][j]);
+                    		}
+                    	}
+                    	else {
+                    		if(tablo[i][j]>64) {
+                    			System.out.print((char) tablo[i][j]);
+                    		}
+                    		else {
+                    			System.out.print((char) 43);
+                    		}
+                    	}
                     } else {
                         System.out.print(tablo[i][j]);
                     }
